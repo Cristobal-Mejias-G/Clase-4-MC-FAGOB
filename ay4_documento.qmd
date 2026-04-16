@@ -40,29 +40,46 @@ La reproducibilidad es un principio central de la ciencia abierta. Un análisis 
 
 ------------------------------------------------------------------------
 
-# Sintaxis de Markdown
+# Creamos nuestro primer archivo .qmd
+
+## Creación del archivo
+
+1. Nos vamos a la sección File -> New File -> Quarto Document... 
+
+![quarto-1](input/images/quarto-1.png)
+
+2. Creamos un nombre del documento y autor/a. Le damos a Create. 
+
+![quarto-2](input/images/quarto-2.png)
+
+## Trabajando el documento
+
+### Escritura plana
 
 Todo el texto de un archivo `.qmd` se escribe en Markdown.
 
-| Código                     | Resultado             |
-|----------------------------|-----------------------|
-| `**negrita**`              | **negrita**           |
-| `*cursiva*`                | *cursiva*             |
-| `# Título 1`               | Encabezado de nivel 1 |
-| `## Título 2`              | Encabezado de nivel 2 |
-| `[texto](https://url.com)` | Enlace                |
-| `![alt](ruta/imagen.png)`  | Imagen                |
-| `> cita`                   | Bloque de cita        |
-| `- ítem`                   | Lista no ordenada     |
-| `1. ítem`                  | Lista ordenada        |
+| Código | Resultado |
+|---------------------------------------|---------------------------------|
+| `**negrita**` | **negrita** |
+| `*cursiva*` | *cursiva* |
+| `# Título 1` | \# Encabezado de nivel 1 |
+| `## Título 2` | \## Encabezado de nivel 2 |
+| `[texto](https://https://www.markdownguide.org/)` | [link](https://www.markdownguide.org/) |
+| `![alt](path/images.png)` | ![texto imagen](input/images/fagob.jpg) |
+| `> cita` | \> cita |
+| `- ítem` | Lista |
+| `1. lista` | Lista ordenada |
 
-------------------------------------------------------------------------
+### Códigos: Chunks!!!
 
-# Chunks de código y sus opciones
+Para poder escribir código de análisis en un documento Quarto debemos generar un trozo de código llamado ‘Chunk’, que se puede crear con ctrl+alt+i o directamente en el menú de arriba en ‘Code -> Insert Chunk’.
 
-Un **chunk** es un bloque de código R que Quarto ejecuta al renderizar. Se inserta con `Ctrl+Alt+I`.
+![quarto-3](input/images/quarto-3.png)
 
-## Opciones principales
+* Los chunks comienzan y terminan con ```
+* {R} Se refiere al lenguaje de programación. En este caso: R
+* Cada chunks puede ir con diferentes opciones. Por defecto, si no se introduce ninguna especificación, vienen como TRUE
+
 
 | Opción    | Descripción                                   |
 |-----------|-----------------------------------------------|
@@ -76,56 +93,36 @@ Un **chunk** es un bloque de código R que Quarto ejecuta al renderizar. Se inse
 | `fig-cap` | Título para gráficos (`label: fig-...`)       |
 | `tbl-cap` | Título para tablas (`label: tbl-...`)         |
 
-### Referencias cruzadas
 
-Cuando asignamos un `label` a un chunk, podemos citarlo en el texto con `@`:
+### Referencias Cruzadas: Tablas y gráficos!!!
 
--   Tablas: `#| label: tbl-nombre` → referencia con `@tbl-nombre`
--   Gráficos: `#| label: fig-nombre` → referencia con `@fig-nombre`
 
-------------------------------------------------------------------------
+1. Label en tablas
 
-# De Documento a Presentación
+Para tablas, debe empezar con el prefijo label: tbl-nombre
 
-Una ventaja clave de Quarto es que **el mismo archivo puede convertirse en distintos formatos** simplemente cambiando el YAML.
+Esto permite que Quarto reconozca el bloque como una tabla numerable y que puedas crear enlaces hacia ella desde el texto.
 
-## Cambiar el formato
+2. Referencias Cruzadas
 
-**Documento HTML:**
+Sintaxis Estándar: Se usa `@tbl-label`. Quarto lo reemplazará automáticamente por "Tabla 1", "Tabla 2", etc.
 
-``` yaml
-format: html
-```
+La numeración (1, 2, 3...) depende exclusivamente del orden de aparición en el documento.
 
-**Presentación RevealJS:**
+No puedes forzar que la quinta tabla creada sea la "Tabla 1" manualmente mediante código; si necesitas cambiar el orden, debes mover el bloque de código físicamente hacia arriba o hacia abajo en el archivo.
 
-``` yaml
-format: revealjs
-```
+3. Tips!!!
 
-## Separar diapositivas
+* Sintaxis Personalizada: Si quieres que el enlace tenga un nombre propio (ej: "ver resumen de datos"), usa el formato de link: `[texto personalizado](@tbl-label)`.
 
-Los encabezados `#` y `##` crean diapositivas automáticamente. También se puede usar `---` para separar manualmente:
+* Al inicio de tu documento, crea un chunk (sin necesidad de label o cap) donde realices todo el procesamiento estadístico. Aquí guardas el resultado final en un objeto de R.
 
-``` markdown
-## Primera diapositiva
+Más adelante, en el lugar exacto donde quieres que aparezca la tabla en tu informe, creas un chunk pequeño que solo contenga el label, el caption y el nombre del objeto
 
-Contenido aquí.
 
----
+4. Gráficos:
 
-Nueva diapositiva sin título.
-```
-
-## Opciones útiles de RevealJS
-
-``` yaml
-format:
-  revealjs:
-    theme: simple
-    slide-number: true
-    incremental: true
-```
+Para los gráficos el label cambia a `@fig-nombre`
 
 ------------------------------------------------------------------------
 
@@ -133,12 +130,21 @@ format:
 
 ## Preparación
 
+Primero veamos un chunks creado desde 0. Cargaremos nuestras librerías:
+
+```{r}
+pacman::p_load(ggplot2, dplyr, kable, kableExtra)
+
+```
+<br>
+
+Para no ver estos warning o mensajes cambiamos las opciones del chunks a FALSE
+
 ```{r}
 #| echo: true
-#| warning: false
+#| warning: false 
 #| message: false
 
-library(pacman)
 pacman::p_load(tidyverse, dplyr, sjmisc, sjPlot, ggplot2, kableExtra, parameters)
 
 options(scipen = 999)
@@ -152,7 +158,7 @@ rm(list = ls())
 #| warning: false
 #| message: false
 
-load(url("https://github.com/cursos-metodos-facso/datos-ejemplos/raw/main/issp_2009_chile.RData"))
+load(url("https://github.com/Cristobal-Mejias-G/Clase-4-MC-FAGOB/raw/main/input/data/issp_2009_chile.RData"))
 
 names(issp)
 glimpse(issp)
@@ -172,7 +178,7 @@ sjmisc::descr(issp,
 
 ```
 
-La @tbl-desc resume el estatus social subjetivo promedio por país.
+La [tabla descriptiva](tbl-desc) resume las variables a trabajar
 
 ## Modelo de regresión lineal
 
@@ -225,6 +231,61 @@ ggplot(issp, aes(x = educyrs, y = topbot)) +
 ```
 
 La @fig-ess muestra la asociación positiva entre años de escolaridad y el estatus percibido.
+
+------------------------------------------------------------------------
+
+# De Documento a Presentación
+
+Una ventaja clave de Quarto es que **el mismo archivo puede convertirse en distintos formatos** simplemente cambiando el YAML.
+
+## Cambiar el formato
+
+**Documento HTML:**
+
+``` yaml
+format: html
+```
+
+**Presentación RevealJS:**
+
+``` yaml
+format: revealjs
+```
+
+## Separar diapositivas
+
+Los encabezados `#` y `##` crean diapositivas automáticamente. También se puede usar `---` para separar manualmente:
+
+``` markdown
+## Primera diapositiva
+
+Contenido aquí.
+
+---
+
+Nueva diapositiva sin título.
+```
+
+## Opciones útiles de RevealJS
+
+``` yaml
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    incremental: true
+```
+
+
+------------------------------------------------------------------------
+
+# Recursos para profundizar
+
+- [Creación de documentos científicos con Quarto]("https://aprendeconalf.es/quarto-textos-cientificos/")
+- [Quarto]("https://quarto.org/")
+- [Video tutorial]("youtube.com/watch?v=EbAAmrB0luA&feature=youtu.be")
+
+
 
 ------------------------------------------------------------------------
 
