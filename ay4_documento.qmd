@@ -2,7 +2,7 @@
 title: "Sesión 4: Documentos dinámicos y Quarto"
 subtitle: "Métodos Cuantitativos para la Administración Pública"
 author: "Cristóbal Mejías"
-date: "17-04-2026"
+date: "04-17-2026"
 lang: es
 format:
   html:
